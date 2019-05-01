@@ -1,6 +1,6 @@
 from collections import deque, OrderedDict
 
-from rlkit.envs.vae_wrapper import VAEWrappedEnv
+#from rlkit.envs.vae_wrapper import VAEWrappedEnv
 from rlkit.core.eval_util import create_stats_ordered_dict
 from rlkit.samplers.rollout_functions import rollout, multitask_rollout
 from rlkit.samplers.data_collector.base import PathCollector
@@ -179,7 +179,7 @@ class VAEWrappedEnvPathCollector(GoalConditionedPathCollector):
     def __init__(
             self,
             goal_sampling_mode,
-            env: VAEWrappedEnv,
+            env,
             policy,
             decode_goals=False,
             **kwargs
