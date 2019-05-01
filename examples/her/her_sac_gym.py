@@ -94,15 +94,15 @@ def experiment(variant, args):
         replay_buffer=replay_buffer,
         **variant['algo_kwargs']
     )
-    if args.gpu == '-1':
-        ptu.set_gpu_mode(False)
-    else:
-        ptu.set_gpu_mode(True, int(args.gpu))
     algorithm.to(ptu.device)
     algorithm.train()
 
 if __name__ == "__main__":
     args = parse_args()
+    if args.gpu == '-1':
+        ptu.set_gpu_mode(False)
+    else:
+        ptu.set_gpu_mode(True, int(args.gpu))
     variant = dict(
         algorithm='HER-SAC',
         version='normal',
