@@ -13,6 +13,9 @@ import argparse
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--env", type=str, default="FetchReach-v1")
+    parser.add_argument("--epochs", type=int, default=100, help='epochs to train')
+    parser.add_argument("-hidd_size", type=int, default=256, help='hidden layer size')
+    parser.add_argument("--depth", type=int, default=3, help='depth of network')
     parser.add_argument("--gpu", type=str, default='-1', help='which gpu to use')
     return parser.parse_args()
 
@@ -98,8 +101,6 @@ def experiment(variant, args):
     algorithm.to(ptu.device)
     algorithm.train()
 
-
-
 if __name__ == "__main__":
     args = parse_args()
     variant = dict(
@@ -107,7 +108,7 @@ if __name__ == "__main__":
         version='normal',
         algo_kwargs=dict(
             batch_size=128,
-            num_epochs=100,
+            num_epochs=args.epochs,
             num_eval_steps_per_epoch=5000,
             num_expl_steps_per_train_loop=1000,
             num_trains_per_train_loop=1000,
@@ -129,11 +130,11 @@ if __name__ == "__main__":
             fraction_goals_env_goals=0,
         ),
         qf_kwargs=dict(
-            hidden_sizes=[400, 300],
+            hidden_sizes=[args.hidd_size] * args.depth,
         ),
         policy_kwargs=dict(
-            hidden_sizes=[400, 300],
+            hidden_sizes=[args.hidd_size] * args.depth,
         ),
     )
-    setup_logger('her-sac-fetch-experiment', variant=variant)
+    setup_logger('her_sac_{}'.format(args.env), variant=variant)
     experiment(variant, args)
