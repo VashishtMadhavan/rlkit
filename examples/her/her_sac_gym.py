@@ -14,8 +14,10 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--env", type=str, default="FetchReach-v1")
     parser.add_argument("--epochs", type=int, default=100, help='epochs to train')
-    parser.add_argument("-hidd_size", type=int, default=256, help='hidden layer size')
+    parser.add_argument("--hidd_size", type=int, default=256, help='hidden layer size')
     parser.add_argument("--depth", type=int, default=3, help='depth of network')
+    parser.add_argument("--train_eps", type=int, default=10, help='number of train eps per epoch')
+    parser.add_argument("--eval_eps", type=int, default=10, help='number of eval eps per epoch')
     parser.add_argument("--gpu", type=str, default='-1', help='which gpu to use')
     return parser.parse_args()
 
@@ -103,18 +105,20 @@ if __name__ == "__main__":
         ptu.set_gpu_mode(False)
     else:
         ptu.set_gpu_mode(True, int(args.gpu))
+    temp_env = gym.make(args.env)
+    t_max = temp_env._max_episode_steps
     variant = dict(
         algorithm='HER-SAC',
         version='normal',
         algo_kwargs=dict(
             batch_size=128,
             num_epochs=args.epochs,
-            num_eval_steps_per_epoch=1000,
-            num_expl_steps_per_train_loop=1000,
+            num_eval_steps_per_epoch=t_max * args.eval_eps,
+            num_expl_steps_per_train_loop=t_max * args.train_eps,
             num_trains_per_train_loop=1000,
             num_train_loops_per_epoch=1,
             min_num_steps_before_training=1000,
-            max_path_length=50,
+            max_path_length=t_max,
         ),
         sac_trainer_kwargs=dict(
             discount=0.99,
