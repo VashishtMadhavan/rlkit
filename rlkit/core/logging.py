@@ -303,7 +303,10 @@ class Logger(object):
                 pass
             else:
                 raise NotImplementedError
-
+            #sending params back to GPU
+            for k in params.keys():
+                if hasattr(params[k], 'cuda'):
+                    params[k].cuda()
 
 logger = Logger()
 
