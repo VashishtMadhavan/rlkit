@@ -278,6 +278,10 @@ class Logger(object):
 
     def save_itr_params(self, itr, params):
         if self._snapshot_dir:
+            # converting params from GPU to CPU
+            for k in params.keys():
+                if hasattr(params[k], 'cpu'):
+                    params[k] = params[k].cpu()
             if self._snapshot_mode == 'all':
                 file_name = osp.join(self._snapshot_dir, 'itr_%d.pkl' % itr)
                 pickle.dump(params, open(file_name, "wb"))

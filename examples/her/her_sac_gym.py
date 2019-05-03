@@ -141,5 +141,6 @@ if __name__ == "__main__":
             hidden_sizes=[args.hidd_size] * args.depth,
         ),
     )
-    setup_logger('her_sac_{}'.format(args.env), variant=variant)
+    setup_logger('her_sac_{}'.format(args.env), variant=variant,
+        snapshot_mode="gap_and_last", snapshot_gap=args.epochs // 10)
     experiment(variant, args)
