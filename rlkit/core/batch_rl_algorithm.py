@@ -1,6 +1,9 @@
 import abc
+import os.path as osp
+import pickle
 
 import gtimer as gt
+from rlkit.core import logger
 from rlkit.core.rl_algorithm import BaseRLAlgorithm
 from rlkit.data_management.replay_buffer import ReplayBuffer
 from rlkit.samplers.data_collector import PathCollector
@@ -78,6 +81,13 @@ class BatchRLAlgorithm(BaseRLAlgorithm, metaclass=abc.ABCMeta):
                     train_data = self.replay_buffer.random_batch(
                         self.batch_size)
                     self.trainer.train(train_data)
+
+                # logging a snapshot of the replay buffer
+                log_data = self.replay_buffer.random_batch(1000)
+                log_goal_dict = self.replay_buffer._batch_obs_dict(log_data['indices'])
+                log_file_name = osp.join(logger._snapshot_dir, 'buffer_%d.pkl' % epoch)
+                pickle.dump(log_goal_dict['achieved_goal'].squeeze(), open(log_file_name, 'wb'))
+
                 gt.stamp('training', unique=False)
                 self.training_mode(False)
 
